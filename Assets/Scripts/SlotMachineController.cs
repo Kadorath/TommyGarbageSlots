@@ -8,8 +8,13 @@ using TMPro;
 
 public class SlotMachineController : MonoBehaviour
 {
+    [SerializeField] bool spinLock = false;
+    [SerializeField] bool scoring = false;
+    [SerializeField] bool skip = false;
+
     public int score = 0;
     private TMP_Text payoutText;
+    private TMP_Text scoreText;
 
     private List<SlotReelController> reels;
     private List<List<int>> lines = new List<List<int>>()
@@ -54,12 +59,25 @@ public class SlotMachineController : MonoBehaviour
         foreach (Transform reel in transform.Find("SlotReels"))
             reels.Add(reel.GetComponent<SlotReelController>());
 
+        scoreText = transform.Find("ScoreText").GetComponent<TMP_Text>();
         payoutText = transform.Find("PayoutText").GetComponent<TMP_Text>();
         paylineParent = transform.Find("Paylines");
     }
 
     public void StartSpin()
     {
+        if (spinLock) 
+        {
+            if (!scoring)
+                StopSpin();
+            else
+                skip = true;
+            return; 
+        }
+        spinLock = true;
+
+        ClearPayoutInfo();
+
         foreach(SlotReelController reel in reels)
             reel.StartSpin();
     }
@@ -71,9 +89,13 @@ public class SlotMachineController : MonoBehaviour
 
     IEnumerator StopSpin_aux()
     {
+        scoring = true;
         yield return StopSpin_Sequential();
         Debug.Log("SCORING TIME!!!");
         yield return ScoreLines();
+        spinLock = false;
+        skip = false;
+        scoring = false;
     }
 
     IEnumerator StopSpin_Sequential()
@@ -125,18 +147,27 @@ public class SlotMachineController : MonoBehaviour
         for (int i = 1; i <= gainedScore; i ++)
         {
             payoutText.text = i.ToString();
-            yield return new WaitForSeconds(Mathf.Min(0.05f, 3f / gainedScore));
+            if (!skip)
+                yield return new WaitForSeconds(Mathf.Min(0.05f, 3f / gainedScore));
         }
 
-        yield return new WaitForSeconds(10f);
-        score += gainedScore;
+        UpdateScore(gainedScore);
+    }
+
+    private void ClearPayoutInfo()
+    {
         payoutText.text = "0";
         for (int i = paylineParent.childCount - 1; i >= 0; i --)
         {
             Destroy(paylineParent.GetChild(i).gameObject);
-        }
+        }   
     }
 
+    private void UpdateScore(int gain)
+    {
+        score += gain;
+        scoreText.text = score.ToString();
+    }
     public SymbolSO SampleSymbol()
     {
         return Symbols[Random.Range(0, Symbols.Count)];
