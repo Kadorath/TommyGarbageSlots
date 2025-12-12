@@ -52,7 +52,16 @@ public class SlotMachineController : MonoBehaviour
         new List<int>() {0, 0, 1, 0, 0},
         new List<int>() {3, 3, 4, 3, 3},
         new List<int>() {1, 1, 0, 1, 1},
-        new List<int>() {4, 4, 3, 4, 4}
+        new List<int>() {4, 4, 3, 4, 4},
+        new List<int>() {2, 2, 1, 2, 2},
+        new List<int>() {2, 2, 3, 2, 2},
+
+        new List<int>() {0, 1, 1, 1, 1},
+        new List<int>() {4, 3, 3, 3, 3},
+        new List<int>() {0, 0, 0, 0, 1},
+        new List<int>() {4, 4, 4, 4, 3},
+        new List<int>() {2, 2, 4, 2, 2},
+        new List<int>() {2, 2, 0, 2, 2}
     };
 
     public List<SymbolSO> Symbols;
@@ -80,7 +89,7 @@ public class SlotMachineController : MonoBehaviour
         PlayerInputManager.PhidgetInput += onPhidgetInput;
 
         reels = new List<SlotReelController>();
-        foreach (Transform reel in transform.Find("SlotReels"))
+        foreach (Transform reel in transform.Find("MainWindow/SlotReels"))
             reels.Add(reel.GetComponent<SlotReelController>());
 
         scoreText = transform.Find("ScoreText").GetComponent<TMP_Text>();
@@ -172,7 +181,7 @@ public class SlotMachineController : MonoBehaviour
                 LineRenderer newPayline = Instantiate(payline, paylineParent).GetComponent<LineRenderer>();
                 for (int i = 0; i < reels.Count; i ++)
                     newPayline.SetPosition(i, new Vector3(reels[i].transform.position.x, 
-                        reels[i].transform.Find("BG/Borders").GetChild(line[i]).position.y -0.75f, 
+                        reels[i].transform.Find("BG/Borders").GetChild(line[i]).position.y -0.35f, 
                         paylineParent.position.z - 0.1f));
                 Gradient gradient = new Gradient();
                 gradient.SetColorKeys(
