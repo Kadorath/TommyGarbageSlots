@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "TommyGarbageSlots.slnx"
+    "dotnet.defaultSolution": "Tommy Garbage's Sabbatical Slots.slnx"
 }
