@@ -3,18 +3,22 @@ using System.Collections;
 using UnityEngine;
 using System;
 
+using SBI = PlayerInputManager.SpaceBridgeInput;
 using Random = UnityEngine.Random;
 using TMPro;
 
 public class SlotMachineController : MonoBehaviour
 {
-    [SerializeField] bool spinLock = false;
-    [SerializeField] bool scoring = false;
-    [SerializeField] bool skip = false;
+    bool spinLock = false;
+    bool scoring = false;
+    bool skip = false;
 
     public int score = 0;
+    public int chipValue = 100;
+    private int curWageredValue = 100;
     private TMP_Text payoutText;
     private TMP_Text scoreText;
+    private TMP_Text chipValueText;
 
     private List<SlotReelController> reels;
     private List<List<int>> lines = new List<List<int>>()
@@ -36,13 +40,31 @@ public class SlotMachineController : MonoBehaviour
 
         // Zig Zags
         new List<int>() {0, 4, 0, 4, 0},
-        new List<int>() {4, 0, 4, 0, 4}       
+        new List<int>() {4, 0, 4, 0, 4},
+        new List<int>() {3, 0, 3, 0, 3},
+        new List<int>() {0, 3, 0, 3, 0},
+        new List<int>() {2, 3, 2, 3, 2},
+        new List<int>() {2, 1, 2, 1, 2},
+
+        // Curves
+        new List<int>() {1, 0, 0, 0, 1},
+        new List<int>() {3, 4, 4, 4, 3},
+        new List<int>() {0, 0, 1, 0, 0},
+        new List<int>() {3, 3, 4, 3, 3},
+        new List<int>() {1, 1, 0, 1, 1},
+        new List<int>() {4, 4, 3, 4, 4}
     };
 
     public List<SymbolSO> Symbols;
 
     [SerializeField] GameObject payline;
     private Transform paylineParent;
+
+    // Audio
+    [Header("Audio")]
+    private AudioSource audiosource;
+    [SerializeField] AudioClip ambienceClip;
+    [SerializeField] AudioClip hypeClip;
 
     public static SlotMachineController Instance;
     void Awake()
@@ -53,15 +75,26 @@ public class SlotMachineController : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void Start()
+    void OnEnable()
     {
+        PlayerInputManager.PhidgetInput += onPhidgetInput;
+
         reels = new List<SlotReelController>();
         foreach (Transform reel in transform.Find("SlotReels"))
             reels.Add(reel.GetComponent<SlotReelController>());
 
         scoreText = transform.Find("ScoreText").GetComponent<TMP_Text>();
         payoutText = transform.Find("PayoutText").GetComponent<TMP_Text>();
+        chipValueText = transform.Find("ChipValueText").GetComponent<TMP_Text>();
         paylineParent = transform.Find("Paylines");
+        UpdateScore(2000);
+
+        audiosource = GetComponent<AudioSource>();
+    }
+
+    void OnDisable()
+    {
+        PlayerInputManager.PhidgetInput -= onPhidgetInput;
     }
 
     public void StartSpin()
@@ -77,6 +110,12 @@ public class SlotMachineController : MonoBehaviour
         spinLock = true;
 
         ClearPayoutInfo();
+
+        curWageredValue = chipValue;
+        UpdateScore(-curWageredValue);
+
+        audiosource.resource = hypeClip;
+        audiosource.Play();
 
         foreach(SlotReelController reel in reels)
             reel.StartSpin();
@@ -96,6 +135,9 @@ public class SlotMachineController : MonoBehaviour
         spinLock = false;
         skip = false;
         scoring = false;
+
+        audiosource.resource = ambienceClip;
+        audiosource.Play();
     }
 
     IEnumerator StopSpin_Sequential()
@@ -125,7 +167,7 @@ public class SlotMachineController : MonoBehaviour
             if (consecutive >= 3) 
             {
                 Debug.Log($"Score {symbol.Scores[consecutive - 3]} on {String.Join(", ", line)}");
-                gainedScore += symbol.Scores[consecutive - 3];
+                gainedScore += symbol.Scores[consecutive - 3] * (curWageredValue / 100);
 
                 LineRenderer newPayline = Instantiate(payline, paylineParent).GetComponent<LineRenderer>();
                 for (int i = 0; i < reels.Count; i ++)
@@ -171,5 +213,35 @@ public class SlotMachineController : MonoBehaviour
     public SymbolSO SampleSymbol()
     {
         return Symbols[Random.Range(0, Symbols.Count)];
+    }
+
+    private void ChangeChipValue(int steps)
+    {
+        if (steps > 0)
+            for (int i = 0; i < steps; i ++)
+                chipValue = Math.Min(chipValue * 2, 1600);
+        else
+            for (int i = 0; i < Mathf.Abs(steps); i ++)
+                chipValue = Math.Max(chipValue / 2, 100);
+
+        chipValueText.text = chipValue.ToString();
+    }
+
+    public void onPhidgetInput(object sender, PhidgetInputChangeEventArgs e)
+    {
+        if (e.type != SBI.BUTTON_INNER || e.value < 0.5f) return;
+
+        switch (e.channel)
+        {
+            case 0:
+                ChangeChipValue(1);
+                break;
+            case 1:
+                ChangeChipValue(-1);
+                break;
+            case 2:
+                StartSpin();
+                break;
+        }
     }
 }
