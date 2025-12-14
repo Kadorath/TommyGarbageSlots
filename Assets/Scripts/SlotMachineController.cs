@@ -6,12 +6,17 @@ using System;
 using SBI = PlayerInputManager.SpaceBridgeInput;
 using Random = UnityEngine.Random;
 using TMPro;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class SlotMachineController : MonoBehaviour
 {
     bool spinLock = false;
     bool scoring = false;
     bool skip = false;
+
+    [SerializeField] bool bonusGameActive = false;
+    [SerializeField] GameObject grabbyPaw;
 
     public int score = 0;
     public int chipValue = 100;
@@ -21,50 +26,62 @@ public class SlotMachineController : MonoBehaviour
     private TMP_Text chipValueText;
 
     private List<SlotReelController> reels;
-    private List<List<int>> lines = new List<List<int>>()
+    private List<Payline> lines = new List<Payline>()
     {
         // Horizontal Lines
-        new List<int>() {0, 0, 0, 0, 0},
-        new List<int>() {1, 1, 1, 1, 1},
-        new List<int>() {2, 2, 2, 2, 2},
-        new List<int>() {3, 3, 3, 3, 3},
-        new List<int>() {4, 4, 4, 4, 4},
+        new Payline(new List<int>() {0, 0, 0, 0, 0}),
+        new Payline(new List<int>() {1, 1, 1, 1, 1}),
+        new Payline(new List<int>() {2, 2, 2, 2, 2}),
+        new Payline(new List<int>() {3, 3, 3, 3, 3}),
+        new Payline(new List<int>() {4, 4, 4, 4, 4}),
 
         // Diagonal Lines
-        new List<int>() {0, 1, 2, 3, 4},
-        new List<int>() {4, 3, 2, 1, 0},
-        new List<int>() {0, 1, 2, 1, 0},
-        new List<int>() {4, 3, 2, 3, 4},
-        new List<int>() {0, 2, 4, 2, 0},
-        new List<int>() {4, 2, 0, 2, 4},
+        new Payline(new List<int>() {0, 1, 2, 3, 4}, Color.green),
+        new Payline(new List<int>() {4, 3, 2, 1, 0}, Color.green),
+        new Payline(new List<int>() {0, 1, 2, 1, 0}, Color.green),
+        new Payline(new List<int>() {4, 3, 2, 3, 4}, Color.green),
+        new Payline(new List<int>() {0, 2, 4, 2, 0}, Color.green),
+        new Payline(new List<int>() {4, 2, 0, 2, 4}, Color.green),
 
         // Zig Zags
-        new List<int>() {0, 4, 0, 4, 0},
-        new List<int>() {4, 0, 4, 0, 4},
-        new List<int>() {3, 0, 3, 0, 3},
-        new List<int>() {0, 3, 0, 3, 0},
-        new List<int>() {2, 3, 2, 3, 2},
-        new List<int>() {2, 1, 2, 1, 2},
+        new Payline(new List<int>() {0, 4, 0, 4, 0}, Color.green),
+        new Payline(new List<int>() {4, 0, 4, 0, 4}, Color.green),
+        new Payline(new List<int>() {3, 0, 3, 0, 3}, Color.green),
+        new Payline(new List<int>() {0, 3, 0, 3, 0}, Color.green),
+        new Payline(new List<int>() {2, 3, 2, 3, 2}, Color.green),
+        new Payline(new List<int>() {2, 1, 2, 1, 2}, Color.green),
+        new Payline(new List<int>() {0, 1, 0, 1, 0}, Color.green),
+        new Payline(new List<int>() {1, 0, 1, 0, 1}, Color.green),
+        new Payline(new List<int>() {1, 2, 1, 2, 1}, Color.green),
+        new Payline(new List<int>() {2, 1, 2, 1, 2}, Color.green),
+        new Payline(new List<int>() {2, 3, 2, 3, 2}, Color.green),
+        new Payline(new List<int>() {3, 2, 3, 2, 3}, Color.green),
+        new Payline(new List<int>() {4, 3, 4, 3, 4}, Color.green),
+        new Payline(new List<int>() {3, 4, 3, 4, 3}, Color.green),
 
         // Curves
-        new List<int>() {1, 0, 0, 0, 1},
-        new List<int>() {3, 4, 4, 4, 3},
-        new List<int>() {0, 0, 1, 0, 0},
-        new List<int>() {3, 3, 4, 3, 3},
-        new List<int>() {1, 1, 0, 1, 1},
-        new List<int>() {4, 4, 3, 4, 4},
-        new List<int>() {2, 2, 1, 2, 2},
-        new List<int>() {2, 2, 3, 2, 2},
+        new Payline(new List<int>() {1, 0, 0, 0, 1}, Color.blue),
+        new Payline(new List<int>() {3, 4, 4, 4, 3}, Color.blue),
+        new Payline(new List<int>() {0, 0, 1, 0, 0}, Color.blue),
+        new Payline(new List<int>() {3, 3, 4, 3, 3}, Color.blue),
+        new Payline(new List<int>() {1, 1, 0, 1, 1}, Color.blue),
+        new Payline(new List<int>() {4, 4, 3, 4, 4}, Color.blue),
+        new Payline(new List<int>() {2, 2, 1, 2, 2}, Color.blue),
+        new Payline(new List<int>() {2, 2, 3, 2, 2}, Color.blue),
+        new Payline(new List<int>() {2, 1, 1, 1, 2}, Color.blue),
+        new Payline(new List<int>() {2, 3, 3, 3, 2}, Color.blue),
 
-        new List<int>() {0, 1, 1, 1, 1},
-        new List<int>() {4, 3, 3, 3, 3},
-        new List<int>() {0, 0, 0, 0, 1},
-        new List<int>() {4, 4, 4, 4, 3},
-        new List<int>() {2, 2, 4, 2, 2},
-        new List<int>() {2, 2, 0, 2, 2}
+        new Payline(new List<int>() {0, 1, 1, 1, 1}, Color.blue),
+        new Payline(new List<int>() {4, 3, 3, 3, 3}, Color.blue),
+        new Payline(new List<int>() {0, 0, 0, 0, 1}, Color.blue),
+        new Payline(new List<int>() {4, 4, 4, 4, 3}, Color.blue),
+        new Payline(new List<int>() {2, 2, 4, 2, 2}, Color.blue),
+        new Payline(new List<int>() {2, 2, 0, 2, 2}, Color.blue)
     };
 
+    public SymbolSO ScatterSymbol;
     public List<SymbolSO> Symbols;
+    private Queue<SymbolSO> symbolBank;
 
     [SerializeField] GameObject payline;
     private Transform paylineParent;
@@ -99,6 +116,8 @@ public class SlotMachineController : MonoBehaviour
         UpdateScore(2000);
 
         audiosource = GetComponent<AudioSource>();
+
+        Debug.Log($"{lines.Count} paylines active");
     }
 
     void OnDisable()
@@ -141,6 +160,11 @@ public class SlotMachineController : MonoBehaviour
         yield return StopSpin_Sequential();
         Debug.Log("SCORING TIME!!!");
         yield return ScoreLines();
+
+        // Alert bonus game!
+        if (bonusGameActive)
+            yield return AlertBonusGame();
+
         spinLock = false;
         skip = false;
         scoring = false;
@@ -161,14 +185,21 @@ public class SlotMachineController : MonoBehaviour
     IEnumerator ScoreLines()
     {
         int gainedScore = 0;
-        foreach(List<int> line in lines)
+        foreach(Payline pl in lines)
         {
+            List<int> line = pl.Line;
             int consecutive = 1;
             SymbolSO symbol = reels[0].symbols[line[0]];
             for (int i = 1; i < line.Count; i ++)
             {
                 SymbolSO curSymbol = reels[i].symbols[line[i]];
-                if (curSymbol == symbol)
+
+                // If I haven't seen a non-Wild symbol yet, try to use the curSymbol as my
+                // reference symbol
+                if (symbol.Symbol == SymbolType.WILD)
+                    symbol = curSymbol;
+
+                if (curSymbol == symbol || curSymbol.Symbol == SymbolType.WILD)
                     consecutive ++;
                 else
                     break; 
@@ -185,7 +216,7 @@ public class SlotMachineController : MonoBehaviour
                         paylineParent.position.z - 0.1f));
                 Gradient gradient = new Gradient();
                 gradient.SetColorKeys(
-                    new GradientColorKey[] { new GradientColorKey(Color.red, 0f), new GradientColorKey(Color.red, 1f)}
+                    new GradientColorKey[] { new GradientColorKey(pl.Color, 0f), new GradientColorKey(pl.Color, 1f)}
                 );
                 if (consecutive < 5)
                     gradient.SetAlphaKeys(
@@ -197,6 +228,9 @@ public class SlotMachineController : MonoBehaviour
                 {
                     reels[i].HighlightSymbol(line[i]);
                 }
+
+                if (symbol.Symbol == SymbolType.TOMMY)
+                    bonusGameActive = true;
             }
         }
 
@@ -208,6 +242,67 @@ public class SlotMachineController : MonoBehaviour
         }
 
         UpdateScore(gainedScore);
+    }
+
+    IEnumerator AlertBonusGame()
+    {
+        ClearPayoutInfo();
+        Transform mainWindow = transform.Find("MainWindow/PawHolder");
+        for (int i = 0; i < reels.Count; i ++)
+        {
+            for (int j = 0; j < reels[i].symbols.Length; j ++)
+            {
+                GrabbyPawBehaviour newPaw = Instantiate(grabbyPaw, mainWindow).GetComponent<GrabbyPawBehaviour>();
+                RectTransform targetIcon = reels[i].GetSymbol(j).GetComponent<RectTransform>();
+
+                switch (Random.Range(0, 2)) 
+                {
+                    // From Right/Left
+                    case 0:
+                        // From Right
+                        if (i > 2 || (Random.value < 0.5f && i == 2))
+                        {
+                            newPaw.Init(new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 32, targetIcon.anchoredPosition.y), 
+                                        new Vector2(800, targetIcon.anchoredPosition.y),
+                                        0f,
+                                        reels[i].GetSymbol(j)
+                            );
+                        }
+                        // From Left
+                        else
+                        {
+                            newPaw.Init(new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 98, targetIcon.anchoredPosition.y),
+                                        new Vector2(0, targetIcon.anchoredPosition.y),
+                                        180f,
+                                        reels[i].GetSymbol(j)
+                            );
+                        }
+                        break;
+                    // From Top/Bottom
+                    case 1:
+                        // From Bottom
+                        if (j > 2 || (Random.value < 0.5f && j == 2))
+                        {
+                            newPaw.Init(new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 72, targetIcon.anchoredPosition.y + 32),
+                                        new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 72, -400f),
+                                        270f,
+                                        reels[i].GetSymbol(j)
+                            );
+                        }
+                        // From Top
+                        else
+                        {
+                            newPaw.Init(new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 72, targetIcon.anchoredPosition.y - 32),
+                                        new Vector2(reels[i].GetComponent<RectTransform>().anchoredPosition.x + 72, 0f),
+                                        90,
+                                        reels[i].GetSymbol(j)
+                            );
+                        }
+                        break;
+                }
+            }
+        }
+        yield return new WaitForSeconds(10f);
     }
 
     private void ClearPayoutInfo()
@@ -227,9 +322,38 @@ public class SlotMachineController : MonoBehaviour
         score += gain;
         scoreText.text = score.ToString();
     }
+
     public SymbolSO SampleSymbol()
     {
-        return Symbols[Random.Range(0, Symbols.Count)];
+        if (symbolBank == null || symbolBank.Count <= 0)
+            InitSymbolBank();
+        
+        return symbolBank.Dequeue();
+    }
+
+    private void InitSymbolBank()
+    {
+        int baseCount = 20;
+        
+        List<SymbolSO> symbolList = new List<SymbolSO>();
+        foreach (SymbolSO symbol in Symbols)
+        {
+            for (int i = 0; i < symbol.Count*baseCount; i ++)
+                symbolList.Add(symbol);
+        }
+
+        for (int i = 0; i < ScatterSymbol.Count*baseCount; i ++)
+            symbolList.Add(ScatterSymbol);
+
+        for (int i = symbolList.Count-1; i > 0; i --)
+        {
+            int j = Random.Range(0, i+1);
+            var temp = symbolList[j];
+            symbolList[j] = symbolList[i];
+            symbolList[i] = temp;
+        }
+
+        symbolBank = new Queue<SymbolSO>(symbolList);
     }
 
     private void ChangeChipValue(int steps)
@@ -260,5 +384,18 @@ public class SlotMachineController : MonoBehaviour
                 StartSpin();
                 break;
         }
+    }
+}
+
+public class Payline
+{
+    public List<int> Line;
+    public Color Color;
+    public bool BonusActive = false;
+
+    public Payline(List<int> line, Color? c = null)
+    {
+        Color = c ?? Color.red;
+        Line = new List<int>(line);
     }
 }

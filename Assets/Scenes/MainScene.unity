@@ -688,6 +688,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233382883}
   m_CullTransparentMesh: 1
+--- !u!1 &271198853
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 271198854}
+  - component: {fileID: 271198856}
+  - component: {fileID: 271198855}
+  m_Layer: 5
+  m_Name: PawHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &271198854
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271198853}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1064794855}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &271198855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271198853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
+  m_Padding: {x: 24, y: 34, z: 24, w: 24}
+  m_Softness: {x: 0, y: 0}
+--- !u!222 &271198856
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271198853}
+  m_CullTransparentMesh: 1
 --- !u!1 &330074383
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,10 +1104,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 401651919}
+  - component: {fileID: 401651920}
   - component: {fileID: 401651918}
   - component: {fileID: 401651917}
   - component: {fileID: 401651916}
-  - component: {fileID: 401651920}
   - component: {fileID: 401651921}
   m_Layer: 5
   m_Name: TommyGarbageSlotMachine
@@ -1158,8 +1217,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ca82e42a08200142919598fc07caa01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  bonusGameActive: 0
+  grabbyPaw: {fileID: 7893679857049043904, guid: 21f3aa8b487aa184cb7400e8f33caedd, type: 3}
   score: 0
   chipValue: 100
+  ScatterSymbol: {fileID: 11400000, guid: 711affd22aa09f34b8be5d0aa6f73f91, type: 2}
   Symbols:
   - {fileID: 11400000, guid: ee567d897f0aca949b3af7deddee01fb, type: 2}
   - {fileID: 11400000, guid: cd1c4eb7029e3fe4294366c10d8faab4, type: 2}
@@ -1167,6 +1229,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a625d1612f99c24eab3614341885954, type: 2}
   - {fileID: 11400000, guid: 48f88d78724b67a4c9df8fc1fcbed1ca, type: 2}
   - {fileID: 11400000, guid: e2e4e7772e7d7cc43876d940b22093e7, type: 2}
+  - {fileID: 11400000, guid: 81cdb40cbc2ace34c902ddf517277bd1, type: 2}
   payline: {fileID: 4427651872774308534, guid: ab9c5950594ba9342902026728351752, type: 3}
   ambienceClip: {fileID: 8300000, guid: 13457347078a2a149a1cf9ea661dddb6, type: 3}
   hypeClip: {fileID: 8300000, guid: 5c73c1d12ab8eda408e3cc29f6c8be24, type: 3}
@@ -1394,6 +1457,50 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &441252104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 441252105}
+  - component: {fileID: 441252106}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &441252105
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441252104}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 837968980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &441252106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441252104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54803750a4721ad41a664c3f90740f0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &494945731
 GameObject:
   m_ObjectHideFlags: 0
@@ -2428,6 +2535,7 @@ Transform:
   m_Children:
   - {fileID: 1872859007}
   - {fileID: 921171841}
+  - {fileID: 441252105}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &919169312
@@ -2748,7 +2856,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1064794855}
-  - component: {fileID: 1064794856}
   m_Layer: 5
   m_Name: MainWindow
   m_TagString: Untagged
@@ -2773,27 +2880,15 @@ RectTransform:
   - {fileID: 1355625541}
   - {fileID: 932153117}
   - {fileID: 744706086}
+  - {fileID: 271198854}
   - {fileID: 494945732}
   m_Father: {fileID: 401651919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -94.70026, y: -63.399902}
+  m_AnchoredPosition: {x: -94.70026, y: -63.399933}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1064794856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064794854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
-  m_ShowMaskGraphic: 1
 --- !u!1 &1081818209
 GameObject:
   m_ObjectHideFlags: 0

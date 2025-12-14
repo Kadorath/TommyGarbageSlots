@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SymbolSO
   Symbol: 3
   Icon: {fileID: 21300000, guid: 92aba0c2a748b2244acd8bea92aa9001, type: 3}
+  Count: 3
   Scores: 0f0000006400000090010000

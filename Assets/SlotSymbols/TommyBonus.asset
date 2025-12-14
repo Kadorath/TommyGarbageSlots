@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64758861da9a78d4f939fba5682299a4, type: 3}
-  m_Name: TV
+  m_Name: TommyBonus
   m_EditorClassIdentifier: Assembly-CSharp::SymbolSO
-  Symbol: 4
-  Icon: {fileID: 21300000, guid: 1497f0a3125d1e24481e91d70cd63b05, type: 3}
-  Count: 2
-  Scores: 1900000064000000ee020000
+  Symbol: 6
+  Icon: {fileID: 21300000, guid: 13dee32acb2dc5d46bce098adb0674db, type: 3}
+  Count: 120
+  Scores: 000000000000000000000000

@@ -25,6 +25,8 @@ public class SlotReelController : MonoBehaviour
         {
             spriteNameToSymbol.Add(symbol.Icon.name, symbol);
         }
+        SymbolSO scatter = SlotMachineController.Instance.ScatterSymbol;
+        spriteNameToSymbol.Add(scatter.Icon.name, scatter);
 
         icons = new List<GameObject>();
         foreach (Transform child in transform.Find("BG/Icons"))

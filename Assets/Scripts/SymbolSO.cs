@@ -5,6 +5,7 @@ public class SymbolSO : ScriptableObject
 {
     public SymbolType Symbol;
     public Sprite Icon;
+    public int Count;
     public int[] Scores = new int[3];
 }
 
@@ -15,5 +16,7 @@ public enum SymbolType
     DIAMOND,
     FISH,
     TV,
-    UMBRELLA
+    UMBRELLA,
+    TOMMY,
+    WILD
 }
