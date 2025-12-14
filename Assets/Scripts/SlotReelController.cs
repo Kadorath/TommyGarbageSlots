@@ -40,7 +40,7 @@ public class SlotReelController : MonoBehaviour
     {
         if (spinning)
         {   
-            float dY =  -800f * spinSpeed * Time.fixedDeltaTime;
+            float dY =  -1200f * spinSpeed * Time.fixedDeltaTime;
 
             bool stopping = false;
             if (stopSpin)
@@ -127,5 +127,35 @@ public class SlotReelController : MonoBehaviour
             SymbolSO symbol = spriteNameToSymbol[spriteName];
             symbols[i] = symbol;
         }
+    }
+
+    public GameObject GetSymbol(int ind)
+    {
+        int firstIcon = 0;
+        float firstY = icons[firstIcon].GetComponent<RectTransform>().anchoredPosition.y;
+        for (int i = 1; i < icons.Count; i ++)
+        {
+            RectTransform t = icons[i].GetComponent<RectTransform>();
+            if (t.anchoredPosition.y > firstY)
+            {
+                firstIcon = i;
+                firstY = t.anchoredPosition.y;
+            }
+        }
+
+        GameObject targetIcon = icons[(firstIcon + ind) % icons.Count];
+        return targetIcon;
+    }
+
+    public void HighlightSymbol(int ind)
+    {
+        GameObject symbol = GetSymbol(ind);
+        symbol.GetComponent<SymbolIconController>().Highlight();
+    }
+
+    public void ResetHighlights()
+    {
+        foreach (GameObject icon in icons)
+            icon.GetComponent<SymbolIconController>().Reset();
     }
 }

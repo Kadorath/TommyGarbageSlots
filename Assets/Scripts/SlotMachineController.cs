@@ -154,7 +154,7 @@ public class SlotMachineController : MonoBehaviour
         foreach (SlotReelController reel in reels)
         {
             reel.StopSpin();
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.3f);
         }
     }
 
@@ -181,7 +181,7 @@ public class SlotMachineController : MonoBehaviour
                 LineRenderer newPayline = Instantiate(payline, paylineParent).GetComponent<LineRenderer>();
                 for (int i = 0; i < reels.Count; i ++)
                     newPayline.SetPosition(i, new Vector3(reels[i].transform.position.x, 
-                        reels[i].transform.Find("BG/Borders").GetChild(line[i]).position.y -0.35f, 
+                        reels[i].transform.Find("BG/Borders").GetChild(line[i]).position.y - 0.45f, 
                         paylineParent.position.z - 0.1f));
                 Gradient gradient = new Gradient();
                 gradient.SetColorKeys(
@@ -192,6 +192,11 @@ public class SlotMachineController : MonoBehaviour
                         new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0.9f, (consecutive)/5f), new GradientAlphaKey(0.05f, (consecutive)/5f + 0.1f), new GradientAlphaKey(0.05f, 0.9f) }
                     );
                 newPayline.colorGradient = gradient;
+
+                for (int i = 0; i < consecutive; i ++)
+                {
+                    reels[i].HighlightSymbol(line[i]);
+                }
             }
         }
 
@@ -211,7 +216,10 @@ public class SlotMachineController : MonoBehaviour
         for (int i = paylineParent.childCount - 1; i >= 0; i --)
         {
             Destroy(paylineParent.GetChild(i).gameObject);
-        }   
+        }
+
+        foreach (SlotReelController reel in reels)
+            reel.ResetHighlights();
     }
 
     private void UpdateScore(int gain)
